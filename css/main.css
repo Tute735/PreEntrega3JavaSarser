@@ -558,6 +558,6 @@ margin-left: 150px;
   border-radius: 10px;
   transition: 0.5s;
 }
-.text-center{
-  font-size: 1vw;
+.totalPrecio{
+  font-size: 14px;
 }
