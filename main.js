@@ -24,7 +24,6 @@ vaciarCarrito.addEventListener('click', ()=>{
     carrito.length =[]
     mostrarCarrito()
 })
-precioTotal.innerText = carrito.reduce((acc,productos)=> acc + productos.cantidad * productos.precio, 0)
 productosArray.forEach((sneaker) =>{
     const div = document.createElement('div')
     div.classList.add('producto')
