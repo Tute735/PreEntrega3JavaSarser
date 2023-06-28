@@ -1,109 +1,185 @@
-const productosArray = [
-    {id: "1", nombre:"Zapatillas Nike Dunk Hi Retro", imagen:"./img/producto1.jpg", precio:58.799, categoria:{marca:"Nike", id:"nike"}},
-    {id: "2", nombre:"Zapatillas Nike Air Force 1 High 07", imagen:'./img/producto2.jpg', precio:64.799, categoria:{marca:"Nike", id:"nike"}},
-    {id: "3", nombre:"Zapatillas adidas Forum Mid",cantidad:1, imagen:"./img/producto3.jpg", precio:37.999, categoria:{marca:"Adidas", id:"adidas"}},
-    {id: "4", nombre:"Zapatillas Jordan 1 Low SE Mujer", imagen:"./img/producto4.jpg", precio:57.999, categoria:{marca:"Nike", id:"nike"}},
-    {id: "5", nombre:"Zapatillas Nike Air Vapormax 2021 Fk", imagen:"./img/producto5.jpg", precio:96.999, categoria:{marca:"Nike", id:"nike"}},
-    {id: "6", nombre:"Zapatillas adidas Forum Mid Thebe ", imagen:"./img/producto6.jpg", precio:57.999, categoria:{marca:"Adidas", id:"adidas"}},
-    {id: "7", nombre:"Zapatillas adidas Superstar Ot Tech", imagen:"./img/producto7.jpg", precio:57.999, categoria:{marca:"Adidas", id:"nike"}},
-    {id: "8", nombre:"Zapatillas Adidas Forum Mid", imagen:"./img/producto8.jpg", precio:55.999, categoria:{marca:"Adidas", id:"nike"}},
-    {id: "9", nombre:"Zapatillas Nike LeBron 19", imagen:"./img/producto9.jpg", precio:79.999, categoria:{marca:"Nike", id:"nike"}},
-    
-]
-let carrito =[]
-const cardsProductos = document.getElementById('cardsProductos')
-const vaciarCarrito = document.getElementById ('vaciarCarrito')
-const precioTotal = document.getElementById ('precioTotal')
+const modalCarrito = document.querySelector("#modalCarrito")
+const abrirCarrito = document.querySelector("#abrirCarrito")
+const cerrarCarrito = document.querySelector("#cerrarCarrito")
+const cardsProductos = document.querySelector("#cardsProductos")
+const vaciarCarrito = document.querySelector("#vaciarCarrito")
+const finalizarCompra = document.querySelector  (".Comprar")
+const agregarCarritos = document.querySelectorAll(".agregarCarrito")
 
-document.addEventListener("DOMContentLoaded", () => {
-    carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-    mostrarCarrito();})
+let carrito = []
+let precioTotal = 0
 
-
-vaciarCarrito.addEventListener('click', ()=>{
-    carrito.length =[]
-    mostrarCarrito()
+abrirCarrito.addEventListener("click", () => {
+  modalCarrito.showModal()
 })
-productosArray.forEach((sneaker) =>{
-    const div = document.createElement('div')
-    div.classList.add('producto')
-    div.innerHTML =`
-    <img src="${sneaker.imagen}" class="imgCard" alt="...">
-    <div class="card-body">
-    <h5 class="card-title">${sneaker.nombre}</h5>
-    <p class="card-text">$${sneaker.precio}</p>
-    <button id="agregarProducto(${sneaker.id})" class="btn btn-primary buttonCard">Agregar</button>
-    </div>
-    </div>`
 
-    cardsProductos.appendChild(div)
-   
-    const boton = document.getElementById(`agregarProducto(${sneaker.id})`)
+cerrarCarrito.addEventListener("click", () => {
+  modalCarrito.close()
+})
+vaciarCarrito.addEventListener('click', ()=>{
+  carrito.length =[]
+  verCarrito()})
 
-     boton.addEventListener('click', () =>{
-        agregarProducto(sneaker.id)
-     })
+const crearProductos = () => {
+  cardsProductos.innerHTML = ""
 
-    
-    })
-    
-   
-    const agregarProducto = (id) => {
-      const item = productosArray.find((prod) => prod.id === id)
-      const existe = carrito.find(prod => prod.id === id)
-      
-        if(existe){
-              existe.cantidad++
-              mostrarCarrito()
-            }
-          
-         else {
-         const ItemAgregar ={
-          id:item.id,
-          nombre:item.nombre,
-          precio:item.precio,
-          cantidad: 1,
-          imagen: item.imagen
-          
-         }
-          carrito.push(ItemAgregar)
-        }
-        mostrarCarrito()
-    }
-      ;  
 
-const mostrarCarrito = () => {
-    const modalBody = document.querySelector(".modal .modal-body");
-    if (modalBody) {
-      modalBody.innerHTML = "";
-      carrito.forEach((prod) => {
-        const { id, nombre, precio, imagen, cantidad } = prod;
-        modalBody.innerHTML += `
-        <div class="modalContainer">
-          <div>
-          <img class="img-fluid img-carrito" src="${imagen}"/>
-          </div>
-          <div class="infoContainer">
-          <p>Producto: ${nombre}</p>
-          <p>Precio: $${precio}</p>
-          <p>Cantidad: ${cantidad}</p>
-            <button class="btn btn-danger"  onclick="eliminarProducto(${id})">Eliminar producto</button>
+
+const verProductos = async() =>{
+const respuesta = await fetch ("../data.json")
+const sneakers = await respuesta.json()
+
+  sneakers.forEach((producto => {
+    cardsProductos.innerHTML += `
+      <div class="producto" Idproducto="${producto.id}">
+        <img src="${producto.imagen}" alt="imagen del producto" class="imgProducto">
+        <div class="nombreProducto">${producto.nombre}</div>
+        <div class="precioProducto">$${producto.precio}</div>
+        <div class="botonProducto">
+          <button class="agregarCarrito">
+            <span class="material-symbols-outlined">add</span>
+          </button>
         </div>
-        </div>`;
-      });
-    }
-    precioTotal.innerText = carrito.reduce((acc, prod) => acc + prod.cantidad * prod.precio, 0)
-    guardarStorage()
-    
+      </div>
+    `
+  
+  }))
+
+}
+verProductos()
+
+
+
+
+
+
+
+
+
+  fetch("./data.json")
+  .then((productosArray)=> productosArray.json())
+  .then((productos)=>{
+    agregarCarritos.forEach(boton => {
+      boton.addEventListener("click", () => {
+        const producto = productos.find(producto => producto.id == boton.parentNode.parentNode.attributes.Idproducto.value)
+        const sumarProd = carrito.find(prod => prod.id == producto.id) 
+  
+        if (sumarProd) {
+          sumarProd.cantidad++
+        } else {
+          carrito.push({...producto, cantidad: 1})
+        }
+        verCarrito()
+      })
+    })
+  })
 }
 
-const eliminarProducto = (id) =>{
-    const item = carrito.find((prod) => id !==prod.id)
-    const indice = carrito.indexOf(item)
-    carrito.splice(indice, 1)
-   mostrarCarrito()
+
+crearProductos()
+
+const verCarrito = () => {
+  const carritoContainer = document.querySelector("#modalContainer")
+  carritoContainer.innerHTML = ""
+
+  let carritoHTML = ""
+
+  carrito.forEach(prod => {
+    carritoHTML += `
+      <div class="articulo" prodId="${prod.id}">
+        <img class="carritoImg" src="${prod.imagen}">
+        <p class="nombreCarrito">${prod.nombre}</p>
+        <p class="precioCarrito">$${prod.precio}</p>
+        <p class="cantCarrito">${prod.cantidad}</p>
+        <div>
+          <button class="agregarUd">Agregar Ud</button>
+        </div>
+        <div>
+          <button class="eliminarUd">Eliminar Ud</button>
+        </div>
+        <div>
+          <button class="eliminarProd">Eliminar</button>
+        </div>
+      </div>
+    `
+  })
+
+  const cantidades = carrito.reduce((a, b) => a + b.cantidad, 0)
+  precioTotal = carrito.reduce((a, b) => a + b.precio * b.cantidad, 0)
+
+  carritoHTML += `
+    <div class= "precioCant">
+    <div class = "cantidadTot">
+      <p class="canTCarrito">Cantidad Total:</p>
+      <p class="canTCarrito">${cantidades}</p>
+    </div>  
+    <div class ="PrecioTot">
+      <p class="preciototal">Precio Total: $</p>
+      <p class="preciototal">${precioTotal}</p>
+    </div>
+    </div>
+  `
+
+  carritoContainer.innerHTML = carritoHTML
+
+ 
+  const eliminarProd = document.querySelectorAll(".eliminarProd")
+
+  eliminarProd.forEach(botones => {
+    botones.addEventListener("click", () => {
+      const prodId = botones.parentNode.parentNode.attributes.prodId.value
+      const prodIndex = carrito.findIndex(prod => prod.id == prodId)
+
+      carrito.splice(prodIndex, 1)
+      verCarrito()
+    })
+  })
+
+  const agregarUd = document.querySelectorAll(".agregarUd")
+
+  agregarUd.forEach(botones => {
+    botones.addEventListener("click", () => {
+      const prodId = botones.parentNode.parentNode.attributes.prodId.value
+      const prod = carrito.find(prod => prod.id == prodId)
+      prod.cantidad++
+
+      verCarrito()
+    })
+  })
+
+  const eliminarUd = document.querySelectorAll(".eliminarUd")
+
+  eliminarUd.forEach(botones => {
+    botones.addEventListener("click", () => {
+      const prodId = botones.parentNode.parentNode.attributes.prodId.value
+      const prod = carrito.find(prod => prod.id == prodId)
+      const prodIndex = carrito.findIndex(prod => prod.id == prodId)
+
+      prod.cantidad--
+
+      if (prod.cantidad < 1) {
+        carrito.splice(prodIndex, 1)
+      }
+
+      verCarrito()
+    })
+  })
 }
 
-function guardarStorage() {
-    localStorage.setItem("carrito", JSON.stringify(carrito));
+finalizarCompra.addEventListener("click", () => {
+  const userInfo = localStorage.getItem("userInfo")
+
+  if (userInfo == null) {
+    window.open("http://192.168.1.39:5500/html/register.html", "_self")
+  } else {
+    localStorage.setItem("carrito", JSON.stringify({ articulos: [...carrito], total: precioTotal }))
+    carrito = []
+    verCarrito()
+    const mensajeCompraRealizada = document.createElement("p")
+    mensajeCompraRealizada.textContent = "¡Compra realizada!"
+    mensajeCompraRealizada.classList.add("mensajeCompra")
+    const carritoContainer = document.querySelector("#modalContainer")
+    carritoContainer.appendChild(mensajeCompraRealizada)
   }
+
+})
