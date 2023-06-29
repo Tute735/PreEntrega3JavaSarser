@@ -302,7 +302,7 @@ body {
   font-size: 14px;
   margin-left: 35px;
 }
-.container_contact .contact_data2 .map iframe {
+.container_contact .contact_data2 iframe {
   width: 90%;
   height: 280px;
   margin: 0 1rem;
@@ -446,7 +446,7 @@ body {
   .venta .tablatalles {
     margin-left: 0px;
   }
-}/*# sourceMappingURL=main.css.map */
+}
 #cardsProductos{
   display: grid;
   grid-template-columns: 33% 33% 33%;

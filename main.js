@@ -26,7 +26,7 @@ const crearProductos = () => {
 
 
 const verProductos = async() =>{
-const respuesta = await fetch ("../data.json")
+const respuesta = await fetch ("./data.json")
 const sneakers = await respuesta.json()
 
   sneakers.forEach((producto => {
@@ -44,7 +44,7 @@ const sneakers = await respuesta.json()
     `
   
   }))
-
+  
 }
 verProductos()
 
@@ -69,7 +69,7 @@ verProductos()
         } else {
           carrito.push({...producto, cantidad: 1})
         }
-        verCarrito()
+      console.log(carrito)
       })
     })
   })
