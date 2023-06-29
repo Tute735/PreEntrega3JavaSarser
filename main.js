@@ -20,10 +20,8 @@ vaciarCarrito.addEventListener('click', ()=>{
   carrito.length =[]
   verCarrito()})
 
-const crearProductos = () => {
+    const crearProductos = () => {
   cardsProductos.innerHTML = ""
-
-
 
 const verProductos = async() =>{
 const respuesta = await fetch ("./data.json")
@@ -31,49 +29,40 @@ const sneakers = await respuesta.json()
 
   sneakers.forEach((producto => {
     cardsProductos.innerHTML += `
-      <div class="producto" Idproducto="${producto.id}">
+      <div class="producto">
         <img src="${producto.imagen}" alt="imagen del producto" class="imgProducto">
         <div class="nombreProducto">${producto.nombre}</div>
         <div class="precioProducto">$${producto.precio}</div>
         <div class="botonProducto">
-          <button class="agregarCarrito">
+          <button Idproducto="${producto.id}" class="agregarCarrito">
             <span class="material-symbols-outlined">add</span>
           </button>
         </div>
       </div>
     `
-  
-  }))
-  
-}
-verProductos()
+   verCarrito()
+  })
+ 
+  )}
 
+agregarCarritos.forEach(boton =>{
+  boton.addEventListener('click', (e)=> agregarCarrito(e,prods ))
+})
+function agregarCarrito(e, prods){
+        const productos = e.find(producto => producto.id === Idproducto)
+        const sumarProd = carrito.find(prod => prod.id == prods.id) 
 
-
-
-
-
-
-
-
-  fetch("./data.json")
-  .then((productosArray)=> productosArray.json())
-  .then((productos)=>{
-    agregarCarritos.forEach(boton => {
-      boton.addEventListener("click", () => {
-        const producto = productos.find(producto => producto.id == boton.parentNode.parentNode.attributes.Idproducto.value)
-        const sumarProd = carrito.find(prod => prod.id == producto.id) 
-  
         if (sumarProd) {
           sumarProd.cantidad++
         } else {
-          carrito.push({...producto, cantidad: 1})
+          carrito.push({...productos, cantidad: 1})
         }
-      console.log(carrito)
-      })
-    })
-  })
-}
+      
+      }
+      verProductos()
+    }
+
+
 
 
 crearProductos()
